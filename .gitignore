@@ -1,0 +1,8 @@
+/nbproject
+*.sublime-project
+*.sublime-workspace
+.vagrant
+*~
+.*~
+!.gitkeep
+!.gitignore
