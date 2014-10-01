@@ -12,22 +12,59 @@ node /^node\d+$/ {
 
     class { 'apt': }
 
+    # Packages
     package { [
-            'fabric',
+            'atop',
+            'bmon',
+            'ccze',
+            'htop',
+            'iotop',
+            'multitail',
+            'ntp'
         ]:
         ensure  => 'installed'
     }
+
+    # Hostnames
+    host { "node1": ip => "10.11.12.11" }
+    host { "node2": ip => "10.11.12.12" }
+    host { "node3": ip => "10.11.12.13" }
+
 
     # Mongo install
     # This should install mongodb server and client, in the latest mongodb-org version
     class {'::mongodb::globals':
         manage_package_repo => true,
-        server_package_name => 'mongodb-org',
-        bind_ip             => ['0.0.0.0']
+        server_package_name => 'mongodb-org'
     } ->
     class {'::mongodb::server':
         journal => true,
-        replset => 'test'        
+        replset => 'test',
+        bind_ip => [ '0.0.0.0' ]
     }->
     class {'::mongodb::client': }
+
+    # Only on VM "node1": fabric install
+    if ($hostname == 'node1') {
+        package { [
+                'fabric'
+            ]:
+            ensure  => 'installed'
+        }
+
+        # Fabric folder
+        file { '/opt/fabric':
+            ensure  => 'directory',
+            owner   => 'root',
+            group   => 'root',
+            mode    => 755
+        } ->
+        file { '/opt/fabric/fabfile.py':
+            source  => "puppet:///modules/common/fabfile.py",
+            owner   => 'root',
+            group   => 'root',
+            mode    => 644,
+            ensure  => 'present'
+        }
+    }
 }
