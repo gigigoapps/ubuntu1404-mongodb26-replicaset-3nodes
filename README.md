@@ -9,6 +9,7 @@ This project uses Vagrant to mount and deploy a test environment with 3 virtual 
   * Git 1.7+
   * Vagrant v1.6.5 + (http://vagrantup.com)
   * Virtualbox v4.3.16 + (https://www.virtualbox.org/)
+  * 1.5 GB of free RAM
 
 ## Do the work
 
@@ -140,9 +141,125 @@ Or you can also exec `sudo [command]` commands.
 
 ## Notes
 
+There are some news since our first project in the series https://github.com/pedroamador/ubuntu1404-mongodb26
+
+### More ammount of RAM
+
+You need at least 1.5 GB of free RAM to deploy the three VM's. 
+
+### Multiple nodes
+
+This project uses the Vagrant advantage of creating multiple VM's in with a single "Vagrantfile" deploy file.
+
+Every VM has its own network IP, hostname and forwarded ports. You can connect with a Mongo client to the mongo process of any or the three nodes
+
+* 10.11.12.11:27017 => Access to the mongo process of "node1"
+* 10.11.12.12:27017 => Access to the mongo process of "node2"
+* 10.11.12.12:27017 => Access to the mongo process of "node2"
+
+Also, there is forwarded ports from your local IP to every node:
+
+* YOUR_LOCAL_IP:27017 => node1:27017
+* YOUR_LOCAL_IP:27018 => node2:27017
+* YOUR_LOCAL_IP:27019 => node3:27017
+
+This menans that anyone on your local network can connect at the three Mongo process hosted in every "node" VM. Imagine that you have the IP 192.168.1.100, and you have the three nodes created, and the replica set builded. You can access from another PC of your local network (ie called "othercompuer"), 
+
+    
+    user@othercomputer:~$ mongo --host 192.168.1.100 --port 27017
+    MongoDB shell version: 2.6.4
+    connecting to: 192.168.1.100:27017/test
+    test:PRIMARY> db.serverStatus()
+    {
+        "host" : "node1",
+        "version" : "2.6.4",
+        "process" : "mongod",
+
+        [...]
+
+        },
+        "ok" : 1
+    }        
+    test:PRIMARY> exit
+    bye
+    user@othercomputer:~$ mongo --host 192.168.1.100 --port 27018
+    MongoDB shell version: 2.6.4
+    connecting to: 192.168.1.100:27018/test
+    test:SECONDARY> db.serverStatus()
+    {
+        "host" : "node2",
+        "version" : "2.6.4",
+        "process" : "mongod",
+
+        [...]
+
+        },
+        "ok" : 1
+    }        
+    test:SECONDARY> exit
+    bye
+    user@othercomputer:~$ mongo --host 192.168.1.100 --port 27019
+    MongoDB shell version: 2.6.4
+    connecting to: 192.168.1.100:27019/test
+    test:SECONDARY> db.serverStatus()
+    {
+        "host" : "node3",
+        "version" : "2.6.4",
+        "process" : "mongod",
+
+        [...]
+
+        },
+        "ok" : 1
+    }        
+    test:SECONDARY> exit
+    bye 
+
+### Puppet script news
+
+One puppet file, multiple nodes deployed: conditional deploy: the puppet file "manifest/node.pp" is used in the three nodes.
+
+There is a line
+
+    node /^node\d+$/ {
+
+that use a regular expression to match the tree nodes (node1, node2, node3). With one puppet script we can deploy the tree VM's
+
+Also, we make conditional setup, installing "Fabric" only on the first node. This behaviour is located later in the same "manifes/node.pp" file
+    
+    [...]
+    # Only on VM "node1": fabric install
+    if ($hostname == 'node1') {
+    [...]
+
+The last trick is to place the hostnames "node1", "node2" and "node3" on the /etc/hosts file with the "host" puppet sentence
+
+
+    # Hostnames
+    host { "node1": ip => "10.11.12.11" }
+    host { "node2": ip => "10.11.12.12" }
+    host { "node3": ip => "10.11.12.13" }
+
+
+### Use of Fabric
+
+We use "Fabric" to build the replica set. The build process is done in 4 steps within a fabric task. There is a pause of 60 seconds between the first step (initiate replica set) and the second step (add the second replica set member)
+
+In the  next projects we will make more intensive use of Fabric
+
+You can read more about fabric at http://www.fabfile.org/
+
+### Performance
+
+You should think that the VM's run into your PC. Don't expect a great performance.
+
+The environment is good for replica set testing, but not for performance testing.
+
 ---
 
 ## Known issues
+
+During the "vagrant up" step, you get some "Warnings" about deprecated puppet sentences and hiera file locations. You can simply ignore it.
 
 ---
 
