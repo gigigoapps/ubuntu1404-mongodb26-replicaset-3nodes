@@ -15,7 +15,6 @@ node /^node\d+$/ {
     # Packages
     package { [
             'atop',
-            'bmon',
             'ccze',
             'htop',
             'iotop',
