@@ -20,7 +20,7 @@ Vagrant.configure(VAGRANTFILE_API_VERSION) do |config|
         node_conf.vm.hostname = "node1"
 
         node_conf.vm.provider 'virtualbox' do |v|
-            v.customize ['modifyvm', :id, '--groups', '/clubvips-deploy']
+            v.customize ['modifyvm', :id, '--groups', '/rstest']
             v.customize ['modifyvm', :id, '--name', 'node1']
             v.customize ['modifyvm', :id, '--cpus', '1']
             v.customize ['modifyvm', :id, '--memory', 512]
@@ -50,7 +50,7 @@ Vagrant.configure(VAGRANTFILE_API_VERSION) do |config|
         node_conf.vm.hostname = "node2"
 
         node_conf.vm.provider 'virtualbox' do |v|
-            v.customize ['modifyvm', :id, '--groups', '/clubvips-deploy']
+            v.customize ['modifyvm', :id, '--groups', '/rstest']
             v.customize ['modifyvm', :id, '--name', 'node2']
             v.customize ['modifyvm', :id, '--cpus', '1']
             v.customize ['modifyvm', :id, '--memory', 512]
@@ -80,7 +80,7 @@ Vagrant.configure(VAGRANTFILE_API_VERSION) do |config|
         node_conf.vm.hostname = "node3"
 
         node_conf.vm.provider 'virtualbox' do |v|
-            v.customize ['modifyvm', :id, '--groups', '/clubvips-deploy']
+            v.customize ['modifyvm', :id, '--groups', '/rstest']
             v.customize ['modifyvm', :id, '--name', 'node3']
             v.customize ['modifyvm', :id, '--cpus', '1']
             v.customize ['modifyvm', :id, '--memory', 512]
