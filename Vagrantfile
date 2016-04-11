@@ -10,6 +10,7 @@ Vagrant.configure(VAGRANTFILE_API_VERSION) do |config|
 
     # Base box
     config.vm.box = "puppetlabs/ubuntu-14.04-64-puppet"
+    config.vm.box_version = "1.0.1"
 
     # VM config
     # Node 1
