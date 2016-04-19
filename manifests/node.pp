@@ -1,5 +1,10 @@
 ## Vagrant :: Ubuntu 14.04 64 bits + MongoDB 2.6 with Replica Set of 3 nodes :: Puppet script ##
 
+define nodehost {
+    $ip = $title + 100
+    host { "node${title}": ip => "10.11.12.${ip}" }
+}
+
 node /^node\d+$/ {
     group { 'puppet': ensure => present }
 
@@ -24,11 +29,8 @@ node /^node\d+$/ {
         ensure  => 'installed'
     }
 
-    # Hostnames
-    host { "node1": ip => "10.11.12.11" }
-    host { "node2": ip => "10.11.12.12" }
-    host { "node3": ip => "10.11.12.13" }
-
+    # Set hostnames in a loop-like
+    nodehost { [1, 2, 3]: }
 
     # Mongo install
     # This should install mongodb server and client, in the latest mongodb-org version

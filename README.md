@@ -36,7 +36,7 @@ This project uses Vagrant to mount and deploy a test environment with 3 virtual 
 This process takes about 60 seconds to complete.
 
         
-    ubuntu1404-mongodb26-replicaset-3nodes$ vagrant ssh node1 -c "sudo fab -f /opt/fabric/fabfile.py mountreplicaset"
+    ubuntu1404-mongodb26-replicaset-3nodes$ vagrant ssh node1 -c "LC_ALL=C sudo fab -f /opt/fabric/fabfile.py mountreplicaset"
     [localhost] local: echo 'rs.initiate()' | mongo
     MongoDB shell version: 2.6.4
     connecting to: test

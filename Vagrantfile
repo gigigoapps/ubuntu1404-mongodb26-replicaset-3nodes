@@ -15,7 +15,7 @@ Vagrant.configure(VAGRANTFILE_API_VERSION) do |config|
     # Node config in a loop
 	(1..3).each do |i|
 	    config.vm.define "node#{i}" do |node_conf|
-	        node_conf.vm.network :private_network, ip: "10.11.12.#{i + 10}"
+	        node_conf.vm.network :private_network, ip: "10.11.12.#{i + 100}"
 
 	        node_conf.vm.hostname = "node#{i}"
 
